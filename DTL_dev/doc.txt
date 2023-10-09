@@ -1,0 +1,8 @@
+flags:
+0 - Default output
+2 - Displays a number in binary format (ammount of digits depends on the type size)
+x - Displays a number in hexadecimal format
+8 - Displays a number in octal format
+f - Always displays the decimal point and 5 places behind it
+i - Alweys displays a number as an integer
+s - Displays a number in scientific notation 
