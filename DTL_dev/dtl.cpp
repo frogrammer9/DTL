@@ -3,12 +3,7 @@
 
 Logger Logger::s_Log;
 
-void Logger::settings()
-{
 
-
-
-}
 
 std::string::size_type Logger::findToken(const std::string& s) const
 {
@@ -21,7 +16,7 @@ std::string::size_type Logger::findToken(const std::string& s) const
 void Logger::output(const std::string& text) { std::cout << text << '\n'; }
 void Logger::erroutput(const std::string& text) { std::cerr << text << '\n'; }
 
-void Logger::showtime()
+void Logger::programTime()
 {
 	m_shouldstayopen = true;
 	int ctime = (clock() - m_time_start) / 1000;
@@ -37,14 +32,32 @@ void Logger::showtime()
 	std::cout << "]";
 }
 
+void Logger::showtime()
+{
+	if (m_timeFormat == 0) { programTime(); return; }
+	else if (m_timeFormat == 1) { std::cout << "[" << (time(0) % (3600) % 24) << ":" << (time(0) % 3600) / 60 << "]"; return; }
+	else if (m_timeFormat == 2) { return; }
+	else programTime();
+}
+
 Logger::Logger()
-	:m_time_start(std::clock()) {}
+	:m_shouldstayopen(false), m_time_start(std::clock()), m_colEntry(DTL_WHITE), 
+	m_colInfo(DTL_GREEN), m_colWarning(DTL_YELLOW), m_colError(DTL_RED), m_timeFormat(0) {}
 
 Logger::~Logger() { if (m_shouldstayopen) system("PAUSE"); }
 
 Logger& Logger::GetInstance() { return s_Log; }
 
 Logger& Log = Logger::GetInstance();
+
+void Logger::settings(std::string entryCol, std::string infoCol, std::string warningCol, std::string errorCol, int timeFormat, int consoleBehaviour)
+{
+	if (entryCol != "\0") m_colEntry = entryCol;
+	if (infoCol != "\0") m_colInfo = infoCol;
+	if (warningCol != "\0") m_colWarning = warningCol;
+	if (errorCol != "\0") m_colError = errorCol;
+	m_timeFormat = timeFormat;
+}
 
 dtl::Timer::Timer() {}
 dtl::Timer::~Timer() {}

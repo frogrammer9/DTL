@@ -10,13 +10,39 @@
 #define ushort uint16_t
 #define uchar uint8_t
 
+//Logger defines
+#define DTL_BLACK			"\033[0;30m"
+#define DTL_DARK_GRAY		"\033[1;30m"
+#define DTL_BLUE			"\033[0;34m"
+#define DTL_LIGHT_BLUE		"\033[1;34m"
+#define DTL_GREEN			"\033[0;32m"
+#define DTL_LIGHT_GREEN		"\033[1;32m"
+#define DTL_CYAN			"\033[0;36m"
+#define DTL_LIGHT_CYAN		"\033[1;36m"
+#define DTL_RED				"\033[0;31m"
+#define DTL_LIGHT_RED		"\033[1;31m"
+#define DTL_PURPLE			"\033[0;35m"
+#define DTL_LIGHT_PURPLE	"\033[1;35m"
+#define DTL_BROWN			"\033[0;33m"
+#define DTL_YELLOW			"\033[1;33m"
+#define DTL_LIGHT_GRAY		"\033[0;37m"
+#define DTL_WHITE			"\033[1;37m"
+#define DTL_DEFAULT			"\0"
+#define DTL_PROGRAM_TIME	0
+#define DTL_SYSTEM_TIME		1
+#define DTL_DONT_SHOW		2
+
 class Logger
 {
 	static Logger s_Log;
-	void settings();
-	bool m_shouldstayopen = false;
+	bool m_shouldstayopen;
 	int m_time_start;
 	std::string::size_type findToken(const std::string& s) const;
+	std::string m_colEntry;
+	std::string m_colInfo;
+	std::string m_colWarning;
+	std::string m_colError;
+	int m_timeFormat;
 	template<typename T>
 	void processTocken(char c, const T& arg) const
 	{
@@ -65,16 +91,18 @@ class Logger
 		std::cerr << text.substr(0, a) << arg;
 		erroutput(text.substr(a + 3), std::forward<Types>(args)...);
 	}
+	void programTime();
 	void showtime();
 	Logger();
 public:
 	Logger(const Logger&) = delete;
 	~Logger();
+	void settings(std::string entryCol, std::string infoCol, std::string warningCol, std::string errorCol, int timeFormat, int consoleBehaviour);
 	static Logger& GetInstance();
 	template<typename ...Types>
 	void entry(std::string message, Types&& ... args)
 	{
-		std::cout << "\033[0m";
+		std::cout << m_colEntry;
 		showtime();
 		std::cout << "[ENT] ";
 		output(message, std::forward<Types>(args)...);
@@ -83,7 +111,7 @@ public:
 	template<typename ...Types>
 	void error(std::string message, Types&& ... args)
 	{
-		std::cerr << "\033[31m";
+		std::cerr << m_colError;
 		showtime();
 		std::cerr << "[ERR] ";
 		erroutput(message, std::forward<Types>(args)...);
@@ -92,7 +120,7 @@ public:
 	template<typename ...Types>
 	void info(std::string message, Types&& ... args)
 	{
-		std::cout << "\033[32m";
+		std::cout << m_colInfo;
 		showtime();
 		std::cout << "[INF] ";
 		output(message, std::forward<Types>(args)...);
@@ -101,7 +129,7 @@ public:
 	template<typename ...Types>
 	void warning(std::string message, Types&& ... args)
 	{
-		std::cout << "\033[35m";
+		std::cout << m_colWarning;
 		showtime();
 		std::cout << "[WAR] ";
 		output(message, std::forward<Types>(args)...);
