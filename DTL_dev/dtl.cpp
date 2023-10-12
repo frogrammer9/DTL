@@ -16,28 +16,26 @@ std::string::size_type Logger::findToken(const std::string& s) const
 void Logger::output(const std::string& text) { std::cout << text << '\n'; }
 void Logger::erroutput(const std::string& text) { std::cerr << text << '\n'; }
 
-void Logger::programTime()
-{
-	m_shouldstayopen = true;
-	int ctime = (clock() - m_time_start) / 1000;
-	std::cout << "[";
-	if ((ctime / 3600) < 10) std::cout << "0";
-	std::cout << (ctime / 3600);
-	std::cout << ":";
-	if ((ctime - ((ctime / 3600) * 3600)) / 60 < 10) std::cout << "0";
-	std::cout << (ctime - ((ctime / 3600) * 3600)) / 60;
-	std::cout << ":";
-	if (ctime - ((ctime / 3600)) * 3600 - ((ctime - ((ctime / 3600) * 3600)) / 60) * 60 < 10) std::cout << "0";
-	std::cout << ctime - (ctime / 3600) * 3600 - ((ctime - (ctime / 3600) * 3600) / 60) * 60;
-	std::cout << "]";
-}
-
+//todo Implement time zones
 void Logger::showtime()
 {
-	if (m_timeFormat == 0) { programTime(); return; }
-	else if (m_timeFormat == 1) { std::cout << "[" << (time(0) % (3600) % 24) << ":" << (time(0) % 3600) / 60 << "]"; return; }
-	else if (m_timeFormat == 2) { return; }
-	else programTime();
+	if (m_timeFormat == DTL_PROGRAM_TIME) 
+	{
+		int ctime = (clock() - m_time_start) / 1000;
+		std::cout
+			<< "[" << std::setfill('0') << std::setw(2) << (ctime / 3600) << ":"
+			<< std::setw(2) << ctime % 3600 / 60 << ":" << std::setw(2) << ctime % 60 << "]"; 
+		return; 
+	}
+	else if (m_timeFormat == DTL_SYSTEM_TIME)
+	{ std::cout << "[" << std::setfill('0')<<
+		std::setw(2) << (time(0) / 60 / 60) % 24 + /*get rid of this 2 (time zone offset)*/2 << ":" << 
+		std::setw(2) << (time(0) / 60) % 60 << ":" << 
+		std::setw(2) << time(0) % 60 << "]";
+		return;
+	}
+	else if (m_timeFormat == DTL_DONT_SHOW) { return; }
+	else std::cout << "[ERROR]";
 }
 
 Logger::Logger()

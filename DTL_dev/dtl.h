@@ -91,7 +91,6 @@ class Logger
 		std::cerr << text.substr(0, a) << arg;
 		erroutput(text.substr(a + 3), std::forward<Types>(args)...);
 	}
-	void programTime();
 	void showtime();
 	Logger();
 public:
