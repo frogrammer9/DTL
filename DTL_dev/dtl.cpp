@@ -1,17 +1,21 @@
 #include"dtl.h"
+#include<time.h>
 
 dtl::Logger dtl::Logger::s_Log;
+namespace dtl
+{
+	dtl::Logger& Log = dtl::Logger::GetInstance();
+}
 
 std::string::size_type dtl::Logger::findToken(const std::string& s) const
 {
-	auto t1 = s.find("[");
-	auto t2 = s.find(']');
+	auto t1 = s.find("{");
+	auto t2 = s.find('}');
 	if (t2 - t1 == 2) return t1;
 	return std::string::npos;
 }
 
-void dtl::Logger::output(const std::string& text) { std::cout << text << '\n'; }
-void dtl::Logger::erroutput(const std::string& text) { std::cerr << text << '\n'; }
+void dtl::Logger::output(const std::string& text) { m_msg << text << '\n'; }
 
 //todo Implement time zones
 void dtl::Logger::showtime()
@@ -19,38 +23,53 @@ void dtl::Logger::showtime()
 	if (m_timeFormat == DTL_PROGRAM_TIME) 
 	{
 		int ctime = (clock() - m_time_start) / 1000;
-		std::cout
+		m_msg
 			<< "[" << std::setfill('0') << std::setw(2) << (ctime / 3600) << ":"
 			<< std::setw(2) << ctime % 3600 / 60 << ":" << std::setw(2) << ctime % 60 << "]"; 
-		return; 
 	}
 	else if (m_timeFormat == DTL_SYSTEM_TIME)
-	{ std::cout << "[" << std::setfill('0')<<
-		std::setw(2) << (time(0) / 60 / 60) % 24 + /*get rid of this 2 (time zone offset)*/2 << ":" << 
-		std::setw(2) << (time(0) / 60) % 60 << ":" << 
-		std::setw(2) << time(0) % 60 << "]";
-		return;
+	{
+		auto t = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		m_msg << "[" << std::setfill('0')<<
+		std::setw(2) << (t / 60 / 60) % 24 << ":" <<
+		std::setw(2) << (t / 60) % 60 << ":" << 
+		std::setw(2) << t % 60 << "]";
 	}
 	else if (m_timeFormat == DTL_DONT_SHOW) { return; }
-	else std::cout << "[ERROR]";
+	else m_msg << "[ERROR]";
 }
 
 dtl::Logger::Logger()
-	:m_shouldstayopen(false), m_time_start(std::clock()), m_colEntry(DTL_WHITE), 
+	:m_shouldstayopen(false), m_time_start(std::clock()), m_mode(0), m_colEntry(DTL_WHITE),
 	m_colInfo(DTL_GREEN), m_colWarning(DTL_YELLOW), m_colError(DTL_RED), m_timeFormat(0) {}
 
-dtl::Logger::~Logger() { if (m_shouldstayopen) system("PAUSE"); }
+dtl::Logger::~Logger() 
+{ 
+	if (m_shouldstayopen) system("PAUSE"); 
+	if (!m_msg.str().empty() && m_mode == 1) 
+	{ 
+		m_outf.open(m_filepath, std::ofstream::out); 
+		if (m_outf.is_open())
+		{
+			m_outf << m_msg.str();
+			m_outf.close();
+		}
+	} 
+}
 
 dtl::Logger& dtl::Logger::GetInstance() { return s_Log; }
 
-void dtl::Logger::settings(std::string entryCol, std::string infoCol, std::string warningCol, std::string errorCol, int timeFormat, int consoleBehaviour)
+void dtl::Logger::settings(std::string entryCol, std::string infoCol, std::string warningCol, std::string errorCol, int timeFormat, int logLocation)
 {
 	if (entryCol != "\0") m_colEntry = entryCol;
 	if (infoCol != "\0") m_colInfo = infoCol;
 	if (warningCol != "\0") m_colWarning = warningCol;
 	if (errorCol != "\0") m_colError = errorCol;
 	m_timeFormat = timeFormat;
+	m_mode = logLocation;
 }
+
+void dtl::Logger::setFile(const std::string& filePath) {m_filepath = filePath; }
 
 dtl::Timer::Timer() {}
 dtl::Timer::~Timer() {}

@@ -1,26 +1,30 @@
-settings(entry color, info color, warning color, error color, time format, force stay open)
+Log is a singleton, you can acces it by using a reference (dtl::Log) or a macro (DTL_LOG)
 
+--settngs--
+Parameters:
 
-entry
-info
-warning
-error
+entryCol - color of a message of type entry (arguments can be DTL_DEFAULT (white) or DTL_ followed by a color name).
+infoCol - color of a message of type information (arguments can be DTL_DEFAULT (green) or DTL_ followed by a color name).
+warningCol - color of a message of type warning (arguments can be DTL_DEFAULT (yellow) or DTL_ followed by a color name).
+errorCol - color of a message of type error (arguments can be DTL_DEFAULT (red) or DTL_ followed by a color name).
 
+timeFormat - how time is shown: DTL_PROGRAM_TIME for time passed form the start of the program, DTL_SYSTEM_TIME for the current system time (doesn't take into consideration DST) and DTL_DONT_SHOW for none.
 
+logLocation - where the logs are shown: DTL_CONSOLE - to display logs in a console, 
+DTL_FILE for saving logs in a file (must specify a filepath using filePath), (if logs were empty the file is not created) or DTL_DONT_SHOW for not saving the logs.
 
-
-
-
-
-
+--entry/info/warning/error--
+You must provide a string in whitch you can place tockens {X} where X is a flag, if between {} is no char or there are non flag char the braces will be displayed normaly, but when a flag is specied 
+instend of {X} an variable given as another argument in the funcion will be displayed. 
+If there are no arguments {X} will be displaced, if there are more arguments then there are {X} then additinal argumentswill be ignored.
+Supported argument types are the same as std::cout.
 
 flags:
 0 - Default output
-2 - Displays a number in binary format (ammount of digits depends on the type size)
+b - Displays number's binary representation
 x - Displays a number in hexadecimal format
-8 - Displays a number in octal format
-f - Always displays the decimal point and 5 places behind it
-i - Alweys displays a number as an integer
+o - Displays a number in octal format
+i - Alweays displays a number as an integer
 s - Displays a number in scientific notation 
 
 

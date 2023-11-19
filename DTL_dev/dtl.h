@@ -1,9 +1,10 @@
 #pragma once
 #include<chrono>
 #include<iostream>
-#include <iomanip>
 #include<string>
+#include<sstream>
 #include<bitset>
+#include<fstream>
 
 #define PI 3.14159265359f
 #define uint uint32_t
@@ -32,6 +33,9 @@
 #define DTL_PROGRAM_TIME	0
 #define DTL_SYSTEM_TIME		1
 #define DTL_DONT_SHOW		2
+#define DTL_CONSOLE			0
+#define DTL_FILE			1
+
 
 namespace dtl
 {
@@ -40,6 +44,10 @@ namespace dtl
 		static Logger s_Log;
 		bool m_shouldstayopen;
 		int m_time_start;
+		uint m_mode;
+		std::string m_filepath;
+		std::ofstream m_outf;
+		std::stringstream m_msg;
 		std::string::size_type findToken(const std::string& s) const;
 		std::string m_colEntry;
 		std::string m_colInfo;
@@ -47,141 +55,84 @@ namespace dtl
 		std::string m_colError;
 		int m_timeFormat;
 		template<typename T>
-		void processToken(char c, const T& arg, bool isError) const
+		void processToken(char c, const T& arg)
 		{
-			if (!isError)
-			{
-				if (c == '0') std::cout << arg;
-				else if (c == 'x') std::cout << std::uppercase << std::hex << arg;
-				else if (c == '8') std::cout << std::oct << arg;
-				else if (c == 'i') std::cout << (int)arg;
-				else if (c == 'f') std::cout << std::showpoint << (double)arg;
-				else if (c == 's') std::cout << std::scientific << arg;
-				else if (c == '2') std::cout << std::bitset<sizeof(arg) * 8>(arg);
-				else std::cout << ":Unknown format specifier:";
-			}
-			else
-			{
-				if (c == '0') std::cerr << arg;
-				else if (c == 'x') std::cerr << std::uppercase << std::hex << arg;
-				else if (c == '8') std::cerr << std::oct << arg;
-				else if (c == 'i') std::cerr << (int)arg;
-				else if (c == 'f') std::cerr << std::showpoint << (double)arg;
-				else if (c == 's') std::cerr << std::scientific << arg;
-				else if (c == '2') std::cerr << std::bitset<sizeof(arg) * 8>(arg);
-				else std::cerr << ":Unknown format specifier:";
-			}
+			if (c == '0') m_msg << arg;
+			else if (c == 'x') m_msg << std::uppercase << std::hex << arg;
+			else if (c == 'o') m_msg << std::oct << arg;
+			else if (c == 'i') m_msg << (int)arg;
+			else if (c == 's') m_msg << std::scientific << arg;
+			else if (c == 'b') { long long val; memcpy(&val, &arg, sizeof(T)); m_msg << std::bitset<sizeof(T) * 8>(val); }
 		}
-		void passToken(char c, const char& a, bool isError) { processToken(c, a, isError); }
-		void passToken(char c, const unsigned char& a, bool isError) { processToken(c, a, isError); }
-		void passToken(char c, const short& a, bool isError) { processToken(c, a, isError); }
-		void passToken(char c, const ushort& a, bool isError) { processToken(c, a, isError); }
-		void passToken(char c, const int& a, bool isError) { processToken(c, a, isError); }
-		void passToken(char c, const uint& a, bool isError) { processToken(c, a, isError); }
-		void passToken(char c, const float& a, bool isError) { processToken(c, a, isError); }
-		void passToken(char c, const double& a, bool isError) { processToken(c, a, isError); }
-		void passToken(char c, const long& a, bool isError) { processToken(c, a, isError); }
-		void passToken(char c, const unsigned long& a, bool isError) { processToken(c, a, isError); }
-		void passToken(char c, const long long& a, bool isError) { processToken(c, a, isError); }
-		void passToken(char c, const unsigned long long& a, bool isError) { processToken(c, a, isError); }
-		void passToken(char c, const std::string& a, bool isError)
-		{
-			if (!isError)
-			{ if (c == '0') std::cout << a; else std::cout << ":Unknown format specifier:"; }
-			else { if (c == '0') std::cerr << a; else std::cerr << ":Unknown format specifier:"; }
-		}
-
-
-
 		void output(const std::string& text);
 		template<typename T>
 		void output(const std::string& text, T&& arg)
 		{
 			auto a = findToken(text);
-			if (a == std::string::npos) { std::cout << text << "\n"; }
+			if (a == std::string::npos) m_msg << text << "\n";
 			else
 			{
-				std::cout << text.substr(0, a);
-				passToken(text[a + 1], arg, false);
-				std::cout << text.substr(a + 3) << '\n';
+				m_msg << text.substr(0, a);
+				processToken(text[a + 1], arg);
+				m_msg << text.substr(a + 3) << '\n';
 			}
 		}
 		template<typename T, typename ...Types>
 		void output(const std::string& text, T&& arg, Types&& ...args)
 		{
 			auto a = findToken(text);
-			std::cout << text.substr(0, a);
-			passToken(text[a + 1], arg, false);
+			if (a == std::string::npos) { m_msg << text << "\n"; return; } //{--1--} here is whats cousing it
+			m_msg << text.substr(0, a);
+			processToken(text[a + 1], arg);
 			output(text.substr(a + 3), std::forward<Types>(args)...);
 		}
-		void erroutput(const std::string& text);
-		template<typename T>
-		void erroutput(const std::string& text, T&& arg)
-		{
-			auto a = findToken(text);
-			if (a == std::string::npos) { std::cerr << text << "\n"; }
-			else
-			{
-				std::cerr << text.substr(0, a);
-				passToken(text[a + 1], arg, true);
-				std::cerr << text.substr(a + 3) << '\n';
-			}
-		}
-		template<typename T, typename ...Types>
-		void erroutput(const std::string& text, T&& arg, Types&& ...args)
-		{
-			auto a = findToken(text);
-			std::cerr << text.substr(0, a);
-			passToken(text[a + 1], arg, true);
-			output(text.substr(a + 3), std::forward<Types>(args)...);
-		}
+
 		void showtime();
 		Logger();
 	public:
 		Logger(const Logger&) = delete;
 		~Logger();
-		void settings(std::string entryCol, std::string infoCol, std::string warningCol, std::string errorCol, int timeFormat, int consoleBehaviour);
+		void settings(std::string entryCol, std::string infoCol, std::string warningCol, std::string errorCol, int timeFormat, int logLocation);
+		void setFile(const std::string& filePath);
 		static Logger& GetInstance();
 		template<typename ...Types>
 		void entry(std::string message, Types&& ... args)
 		{
-			std::cout << m_colEntry;
+			if (m_mode == 0) { m_msg.str(std::string()); m_msg << m_colEntry; }
 			showtime();
-			std::cout << "[ENT] ";
+			m_msg << "[ENT] ";
 			output(message, std::forward<Types>(args)...);
-			std::cout << "\033[0m";
+			if (m_mode == 0) { m_msg << "\033[0m"; std::cout << m_msg.str(); }
 		}
 		template<typename ...Types>
 		void error(std::string message, Types&& ... args)
 		{
-			std::cerr << m_colError;
+			if (m_mode == 0) { m_msg.str(std::string()); m_msg << m_colError; }
 			showtime();
-			std::cerr << "[ERR] ";
-			erroutput(message, std::forward<Types>(args)...);
-			std::cerr << "\033[0m";
+			m_msg << "[ERR] ";
+			output(message, std::forward<Types>(args)...);
+			if (m_mode == 0) { m_msg << "\033[0m"; std::cerr << m_msg.str(); }
 		}
 		template<typename ...Types>
 		void info(std::string message, Types&& ... args)
 		{
-			std::cout << m_colInfo;
+			if (m_mode == 0) { m_msg.str(std::string()); m_msg << m_colInfo; }
 			showtime();
-			std::cout << "[INF] ";
+			m_msg << "[INF] ";
 			output(message, std::forward<Types>(args)...);
-			std::cout << "\033[0m";
+			if (m_mode == 0) { m_msg << "\033[0m"; std::cout << m_msg.str(); }
 		}
 		template<typename ...Types>
 		void warning(std::string message, Types&& ... args)
 		{
-			std::cout << m_colWarning;
+			if (m_mode == 0) { m_msg.str(std::string()); m_msg << m_colWarning; }
 			showtime();
-			std::cout << "[WAR] ";
+			m_msg << "[WAR] ";
 			output(message, std::forward<Types>(args)...);
-			std::cout << "\033[0m";
+			if (m_mode == 0) { m_msg << "\033[0m"; std::cout << m_msg.str(); }
 		}
 	};
-
-
-
+	extern dtl::Logger& Log;
 	class Timer
 	{
 		std::chrono::high_resolution_clock::time_point m_begin;
@@ -207,4 +158,5 @@ namespace dtl
 	void swap(unsigned long& a, unsigned long& b);
 	void swap(long long& a, long long& b);
 	void swap(unsigned long long& a, unsigned long long& b);
+	
 }
