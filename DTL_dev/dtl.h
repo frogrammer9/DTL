@@ -48,7 +48,7 @@ namespace dtl
 		std::string m_filepath;
 		std::ofstream m_outf;
 		std::stringstream m_msg;
-		std::string::size_type findToken(const std::string& s) const;
+		bool findToken(const std::string& s, size_t* t1, size_t* t2);
 		std::string m_colEntry;
 		std::string m_colInfo;
 		std::string m_colWarning;
@@ -66,25 +66,31 @@ namespace dtl
 		}
 		void output(const std::string& text);
 		template<typename T>
-		void output(const std::string& text, T&& arg)
+		void output(const std::string& text, T&& arg)//{--1--}
 		{
-			auto a = findToken(text);
-			if (a == std::string::npos) m_msg << text << "\n";
+			size_t t1, t2;
+			if (!findToken(text, &t1, &t2)) m_msg << text << "\n";
 			else
 			{
-				m_msg << text.substr(0, a);
-				processToken(text[a + 1], arg);
-				m_msg << text.substr(a + 3) << '\n';
+				m_msg << text.substr(0, t1);
+				processToken(text[t1 + 1], arg);
+				m_msg << text.substr(t1 + 3) << '\n';
 			}
 		}
 		template<typename T, typename ...Types>
 		void output(const std::string& text, T&& arg, Types&& ...args)
 		{
-			auto a = findToken(text);
-			if (a == std::string::npos) { m_msg << text << "\n"; return; } //{--1--} here is whats cousing it
-			m_msg << text.substr(0, a);
-			processToken(text[a + 1], arg);
-			output(text.substr(a + 3), std::forward<Types>(args)...);
+			size_t t1, t2;
+			if (!findToken(text, &t1, &t2))
+			{
+				if (t1 == std::string::npos) { m_msg << text << '\n'; return; }
+				m_msg << text.substr(0, t2 + 1);
+				output(text.substr(t2 + 1), std::forward<T>(arg), std::forward<Types>(args)...);
+				return; 
+			} 
+			m_msg << text.substr(0, t1);
+			processToken(text[t1 + 1], arg);
+			output(text.substr(t1 + 3), std::forward<Types>(args)...);
 		}
 
 		void showtime();

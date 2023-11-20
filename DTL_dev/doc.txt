@@ -14,8 +14,8 @@ logLocation - where the logs are shown: DTL_CONSOLE - to display logs in a conso
 DTL_FILE for saving logs in a file (must specify a filepath using filePath), (if logs were empty the file is not created) or DTL_DONT_SHOW for not saving the logs.
 
 --entry/info/warning/error--
-You must provide a string in whitch you can place tockens {X} where X is a flag, if between {} is no char or there are non flag char the braces will be displayed normaly, but when a flag is specied 
-instend of {X} an variable given as another argument in the funcion will be displayed. 
+You must provide a string in whitch you can place tockens {X} where X is a flag, if between {} is no char or more then one char the braces (and the contents between them) will be displayed normaly,
+but when a flag is specied instend of {X} a variable given as another argument in the funcion will be displayed. 
 If there are no arguments {X} will be displaced, if there are more arguments then there are {X} then additinal argumentswill be ignored.
 Supported argument types are the same as std::cout.
 

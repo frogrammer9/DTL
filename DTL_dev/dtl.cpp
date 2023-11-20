@@ -7,12 +7,11 @@ namespace dtl
 	dtl::Logger& Log = dtl::Logger::GetInstance();
 }
 
-std::string::size_type dtl::Logger::findToken(const std::string& s) const
+bool dtl::Logger::findToken(const std::string& s, size_t* t1, size_t* t2)
 {
-	auto t1 = s.find("{");
-	auto t2 = s.find('}');
-	if (t2 - t1 == 2) return t1;
-	return std::string::npos;
+	*t1 = s.find('{');
+	*t2 = s.find('}');
+	return (*t2 - *t1 == 2);
 }
 
 void dtl::Logger::output(const std::string& text) { m_msg << text << '\n'; }
