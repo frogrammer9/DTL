@@ -69,13 +69,16 @@ namespace dtl
 		void output(const std::string& text, T&& arg)//{--1--}
 		{
 			size_t t1, t2;
-			if (!findToken(text, &t1, &t2)) m_msg << text << "\n";
-			else
+			if (!findToken(text, &t1, &t2))
 			{
-				m_msg << text.substr(0, t1);
-				processToken(text[t1 + 1], arg);
-				m_msg << text.substr(t1 + 3) << '\n';
+				if (t1 == std::string::npos) { m_msg << text << '\n'; return; }
+				m_msg << text.substr(0, t2 + 1);
+				output(text.substr(t2 + 1), std::forward<T>(arg));
+				return;
 			}
+			m_msg << text.substr(0, t1);
+			processToken(text[t1 + 1], arg);
+			m_msg << text.substr(t1 + 3) << '\n';
 		}
 		template<typename T, typename ...Types>
 		void output(const std::string& text, T&& arg, Types&& ...args)
