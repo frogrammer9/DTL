@@ -15,7 +15,7 @@ DTL_FILE for saving logs in a file (must specify a filepath using filePath), (if
 
 --entry/info/warning/error--
 You must provide a string in whitch you can place tockens {X} where X is a flag, if between {} is no char or more then one char the braces (and the contents between them) will be displayed normaly,
-but when a flag is specied instend of {X} a variable given as another argument in the funcion will be displayed. 
+but when a flag is specied isuinstend of {X} a variable given as another argument in the funcion will be displayed. 
 If there are no arguments {X} will be displaced, if there are more arguments then there are {X} then additinal argumentswill be ignored.
 Supported argument types are the same as std::cout.
 
@@ -26,7 +26,3 @@ x - Displays a number in hexadecimal format
 o - Displays a number in octal format
 i - Alweays displays a number as an integer
 s - Displays a number in scientific notation 
-
-
-
-! C++20 !

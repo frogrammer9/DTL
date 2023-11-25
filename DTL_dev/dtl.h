@@ -1,6 +1,7 @@
 #pragma once
-#include<chrono>
 #include<iostream>
+#include<iomanip>
+#include<chrono>
 #include<string>
 #include<sstream>
 #include<bitset>

@@ -14,7 +14,7 @@ int main()
 	dtl::Log.error("haha [x]", 6545145);
 	DTL_LOG_ENT("macro test {0}, {i}", 7, 15.5f);
 
-
+	
 
 
 
