@@ -13,6 +13,10 @@
 
 //Logger defines
 #define DTL_LOG dtl::Logger::GetInstance()
+#define DTL_ENT(text, ...) dtl::Log.entry(text, __VA_ARGS__)
+#define DTL_INF(text, ...) dtl::Log.info(text, __VA_ARGS__)
+#define DTL_WAR(text, ...) dtl::Log.warning(text, __VA_ARGS__)
+#define DTL_ERR(text, ...) dtl::Log.error(text, __VA_ARGS__)
 #define DTL_BLACK			"\033[0;30m"
 #define DTL_DARK_GRAY		"\033[1;30m"
 #define DTL_BLUE			"\033[0;34m"
@@ -107,38 +111,38 @@ namespace dtl
 		template<typename ...Types>
 		void entry(std::string message, Types&& ... args)
 		{
-			if (m_mode == 0) { m_msg.str(std::string()); m_msg << m_colEntry; }
+			if (m_mode == DTL_CONSOLE) { m_msg.str(std::string()); m_msg << m_colEntry; }
 			showtime();
 			m_msg << "[ENT] ";
 			output(message, std::forward<Types>(args)...);
-			if (m_mode == 0) { m_msg << "\033[0m"; std::cout << m_msg.str(); }
+			if (m_mode == DTL_CONSOLE) { m_msg << "\033[0m"; std::cout << m_msg.str(); }
 		}
 		template<typename ...Types>
 		void error(std::string message, Types&& ... args)
 		{
-			if (m_mode == 0) { m_msg.str(std::string()); m_msg << m_colError; }
+			if (m_mode == DTL_CONSOLE) { m_msg.str(std::string()); m_msg << m_colError; }
 			showtime();
 			m_msg << "[ERR] ";
 			output(message, std::forward<Types>(args)...);
-			if (m_mode == 0) { m_msg << "\033[0m"; std::cerr << m_msg.str(); }
+			if (m_mode == DTL_CONSOLE) { m_msg << "\033[0m"; std::cerr << m_msg.str(); }
 		}
 		template<typename ...Types>
 		void info(std::string message, Types&& ... args)
 		{
-			if (m_mode == 0) { m_msg.str(std::string()); m_msg << m_colInfo; }
+			if (m_mode == DTL_CONSOLE) { m_msg.str(std::string()); m_msg << m_colInfo; }
 			showtime();
 			m_msg << "[INF] ";
 			output(message, std::forward<Types>(args)...);
-			if (m_mode == 0) { m_msg << "\033[0m"; std::cout << m_msg.str(); }
+			if (m_mode == DTL_CONSOLE) { m_msg << "\033[0m"; std::cout << m_msg.str(); }
 		}
 		template<typename ...Types>
 		void warning(std::string message, Types&& ... args)
 		{
-			if (m_mode == 0) { m_msg.str(std::string()); m_msg << m_colWarning; }
+			if (m_mode == DTL_CONSOLE) { m_msg.str(std::string()); m_msg << m_colWarning; }
 			showtime();
 			m_msg << "[WAR] ";
 			output(message, std::forward<Types>(args)...);
-			if (m_mode == 0) { m_msg << "\033[0m"; std::cout << m_msg.str(); }
+			if (m_mode == DTL_CONSOLE) { m_msg << "\033[0m"; std::cout << m_msg.str(); }
 		}
 	};
 	extern dtl::Logger& Log;

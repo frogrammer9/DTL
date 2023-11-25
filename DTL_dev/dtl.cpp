@@ -45,7 +45,7 @@ dtl::Logger::Logger()
 dtl::Logger::~Logger() 
 { 
 	if (m_shouldstayopen) system("PAUSE"); 
-	if (!m_msg.str().empty() && m_mode == 1) 
+	if (!m_msg.str().empty() && m_mode == DTL_FILE) 
 	{ 
 		m_outf.open(m_filepath, std::ofstream::out); 
 		if (m_outf.is_open())
