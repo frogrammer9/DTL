@@ -7,12 +7,14 @@
 #include<bitset>
 #include<fstream>
 
-#define PI 3.14159265359f
+#define PI 3.141592653589793
+#define Euler 2.718281828459045
+#define Golden_Ratio 1.618033988749894
 #define uint uint32_t
 #define ushort uint16_t
 #define uchar uint8_t
+#define llong long long
 
-//Logger defines
 #define DTL_LOG dtl::Logger::GetInstance()
 #define DTL_ENT(text, ...) dtl::Log.entry(text, __VA_ARGS__)
 #define DTL_INF(text, ...) dtl::Log.info(text, __VA_ARGS__)
@@ -41,24 +43,22 @@
 #define DTL_CONSOLE			0
 #define DTL_FILE			1
 
-
 namespace dtl
 {
 	class Logger
 	{
 		static Logger s_Log;
-		bool m_shouldstayopen;
 		int m_time_start;
 		uint m_mode;
-		std::string m_filepath;
-		std::ofstream m_outf;
-		std::stringstream m_msg;
-		bool findToken(const std::string& s, size_t* t1, size_t* t2);
 		std::string m_colEntry;
 		std::string m_colInfo;
 		std::string m_colWarning;
 		std::string m_colError;
 		int m_timeFormat;
+		std::string m_filepath;
+		std::ofstream m_outf;
+		std::stringstream m_msg;
+		bool findToken(const std::string& s, size_t* t1, size_t* t2);
 		template<typename T>
 		void processToken(char c, const T& arg)
 		{
@@ -71,7 +71,7 @@ namespace dtl
 		}
 		void output(const std::string& text);
 		template<typename T>
-		void output(const std::string& text, T&& arg)//{--1--}
+		void output(const std::string& text, T&& arg)
 		{
 			size_t t1, t2;
 			if (!findToken(text, &t1, &t2))
@@ -147,30 +147,4 @@ namespace dtl
 		}
 	};
 	extern dtl::Logger& Log;
-	class Timer
-	{
-		std::chrono::high_resolution_clock::time_point m_begin;
-	public:
-		Timer(const Timer&) = delete;
-		Timer();
-		~Timer();
-		void Start();
-		double Get();
-	};
-
-	float round(float number);
-	double round(double number);
-	long double round(long double number);
-
-	void swap(short& a, short& b);
-	void swap(ushort& a, ushort& b);
-	void swap(int& a, int& b);
-	void swap(uint& a, uint& b);
-	void swap(float& a, float& b);
-	void swap(double& a, double& b);
-	void swap(long& a, long& b);
-	void swap(unsigned long& a, unsigned long& b);
-	void swap(long long& a, long long& b);
-	void swap(unsigned long long& a, unsigned long long& b);
-	
 }
