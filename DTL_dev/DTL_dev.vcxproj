@@ -132,7 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dtl.cpp" />
-    <ClCompile Include="test.cpp" />
+    <ClCompile Include="example.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dtl.h" />

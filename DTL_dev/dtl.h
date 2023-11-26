@@ -13,7 +13,9 @@
 #define uint uint32_t
 #define ushort uint16_t
 #define uchar uint8_t
+#define ulong unsigned long
 #define llong long long
+#define ullong unsigned long long
 
 #define DTL_LOG dtl::Logger::GetInstance()
 #define DTL_ENT(text, ...) dtl::Log.entry(text, __VA_ARGS__)
@@ -63,12 +65,15 @@ namespace dtl
 		void processToken(char c, const T& arg)
 		{
 			if (c == '0') m_msg << arg;
-			else if (c == 'x') m_msg << std::uppercase << std::hex << arg;
-			else if (c == 'o') m_msg << std::oct << arg;
-			else if (c == 'i') m_msg << (int)arg;
-			else if (c == 's') m_msg << std::scientific << arg;
-			else if (c == 'b') { long long val; memcpy(&val, &arg, sizeof(T)); m_msg << std::bitset<sizeof(T) * 8>(val); }
+			else if (c == 'x') m_msg << std::uppercase << std::hex << arg << std::nouppercase << std::dec;
+			else if (c == 'o') m_msg << std::oct << arg << std::dec;
+			else if (c == 'i') m_msg << static_cast<int>(arg);
+			else if (c == 's') m_msg << std::scientific << arg << std::defaultfloat;
+			else if (c == 'b') { llong val; memcpy(&val, &arg, sizeof(T)); m_msg << std::bitset<sizeof(T) * 8>(val); }
 		}
+		void processToken(char c, const std::string& arg);
+		void processToken(char c, const char* arg);
+
 		void output(const std::string& text);
 		template<typename T>
 		void output(const std::string& text, T&& arg)

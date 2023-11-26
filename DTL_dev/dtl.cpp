@@ -12,6 +12,17 @@ bool dtl::Logger::findToken(const std::string& s, size_t* t1, size_t* t2)
 	return (*t2 - *t1 == 2);
 }
 
+void dtl::Logger::processToken(char c, const std::string& arg)
+{
+	if (c == '0') m_msg << arg;
+	else if (c == 'b') { long long val; memcpy(&val, &arg, sizeof(arg)); m_msg << std::bitset<sizeof(arg) * 8>(val); }
+}
+void dtl::Logger::processToken(char c, const char* arg)
+{
+	if (c == '0') m_msg << arg;
+	else if (c == 'b') { long long val; memcpy(&val, &arg, sizeof(arg)); m_msg << std::bitset<sizeof(arg) * 8>(val); }
+}
+
 void dtl::Logger::showtime()
 {
 	if (m_timeFormat == DTL_PROGRAM_TIME) 
