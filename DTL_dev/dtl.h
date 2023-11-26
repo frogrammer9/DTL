@@ -7,12 +7,16 @@
 #include<bitset>
 #include<fstream>
 
-#define PI 3.14159265359f
+#define PI 3.141592653589793
+#define Euler 2.718281828459045
+#define Golden_Ratio 1.618033988749894
 #define uint uint32_t
 #define ushort uint16_t
 #define uchar uint8_t
+#define ulong unsigned long
+#define llong long long
+#define ullong unsigned long long
 
-//Logger defines
 #define DTL_LOG dtl::Logger::GetInstance()
 #define DTL_ENT(text, ...) dtl::Log.entry(text, __VA_ARGS__)
 #define DTL_INF(text, ...) dtl::Log.info(text, __VA_ARGS__)
@@ -41,37 +45,38 @@
 #define DTL_CONSOLE			0
 #define DTL_FILE			1
 
-
 namespace dtl
 {
 	class Logger
 	{
 		static Logger s_Log;
-		bool m_shouldstayopen;
 		int m_time_start;
 		uint m_mode;
-		std::string m_filepath;
-		std::ofstream m_outf;
-		std::stringstream m_msg;
-		bool findToken(const std::string& s, size_t* t1, size_t* t2);
 		std::string m_colEntry;
 		std::string m_colInfo;
 		std::string m_colWarning;
 		std::string m_colError;
 		int m_timeFormat;
+		std::string m_filepath;
+		std::ofstream m_outf;
+		std::stringstream m_msg;
+		bool findToken(const std::string& s, size_t* t1, size_t* t2);
 		template<typename T>
 		void processToken(char c, const T& arg)
 		{
 			if (c == '0') m_msg << arg;
-			else if (c == 'x') m_msg << std::uppercase << std::hex << arg;
-			else if (c == 'o') m_msg << std::oct << arg;
-			else if (c == 'i') m_msg << (int)arg;
-			else if (c == 's') m_msg << std::scientific << arg;
-			else if (c == 'b') { long long val; memcpy(&val, &arg, sizeof(T)); m_msg << std::bitset<sizeof(T) * 8>(val); }
+			else if (c == 'x') m_msg << std::uppercase << std::hex << arg << std::nouppercase << std::dec;
+			else if (c == 'o') m_msg << std::oct << arg << std::dec;
+			else if (c == 'i') m_msg << static_cast<int>(arg);
+			else if (c == 's') m_msg << std::scientific << arg << std::defaultfloat;
+			else if (c == 'b') { llong val; memcpy(&val, &arg, sizeof(T)); m_msg << std::bitset<sizeof(T) * 8>(val); }
 		}
+		void processToken(char c, const std::string& arg);
+		void processToken(char c, const char* arg);
+
 		void output(const std::string& text);
 		template<typename T>
-		void output(const std::string& text, T&& arg)//{--1--}
+		void output(const std::string& text, T&& arg)
 		{
 			size_t t1, t2;
 			if (!findToken(text, &t1, &t2))
