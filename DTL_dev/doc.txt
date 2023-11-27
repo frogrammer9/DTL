@@ -32,3 +32,6 @@ x - Displays a number in hexadecimal format
 o - Displays a number in octal format
 i - Always displays a number as an integer
 s - Displays a number in scientific notation 
+n - Displays elements right next to one another without a coma (works for arrays and vectors only)
+c - Displays elements in a column with index number (works for arrays and vectors only)
+k - Displays elements in a column without index number (works for arrays and vectors only)

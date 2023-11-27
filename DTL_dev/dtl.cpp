@@ -77,17 +77,3 @@ dtl::Timer::~Timer() {}
 
 void dtl::Timer::Start() { m_begin = std::chrono::high_resolution_clock::now(); }
 double dtl::Timer::Get() { return std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now() - m_begin).count(); }
-float dtl::round(float number) { return (float)((int)(number + 0.5)); }
-double dtl::round(double number) { return (double)((int)(number + 0.5)); }
-long double dtl::round(long double number) { return (long double)((int)(number + 0.5)); }
-
-void dtl::swap(short& a, short& b) { a = a + b; b = a - b; a = a - b; }
-void dtl::swap(ushort& a, ushort& b) { a = a + b; b = a - b; a = a - b; }
-void dtl::swap(uint& a, uint& b) { a = a + b; b = a - b; a = a - b; }
-void dtl::swap(int& a, int& b) { a = a + b; b = a - b; a = a - b; }
-void dtl::swap(float& a, float& b) { a = a + b; b = a - b; a = a - b; }
-void dtl::swap(double& a, double& b) { a = a + b; b = a - b; a = a - b; }
-void dtl::swap(long& a, long& b) { a = a + b; b = a - b; a = a - b; }
-void dtl::swap(unsigned long& a, unsigned long& b) { a = a + b; b = a - b; a = a - b; }
-void dtl::swap(long long& a, long long& b) { a = a + b; b = a - b; a = a - b; }
-void dtl::swap(unsigned long long& a, unsigned long long& b) { a = a + b; b = a - b; a = a - b; }

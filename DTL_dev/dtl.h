@@ -6,6 +6,8 @@
 #include<sstream>
 #include<bitset>
 #include<fstream>
+#include<vector>
+#include<array>
 
 #define PI 3.141592653589793
 #define Euler 2.718281828459045
@@ -70,6 +72,22 @@ namespace dtl
 			else if (c == 'i') m_msg << static_cast<int>(arg);
 			else if (c == 's') m_msg << std::scientific << arg << std::defaultfloat;
 			else if (c == 'b') { llong val; memcpy(&val, &arg, sizeof(T)); m_msg << std::bitset<sizeof(T) * 8>(val); }
+		}
+		template<typename T>
+		void processToken(char c, const std::vector<T>& arg)
+		{
+			if (c == '0') { for (int i = 0; i < arg.size(); ++i) { m_msg << arg[i]; if (i + 1 != arg.size()) { m_msg << ", "; } } }
+			else if (c == 'n') { for (auto a : arg) { m_msg << a; } }
+			else if (c == 'c') { m_msg << "\n"; for (int i = 0; i < arg.size(); ++i) { m_msg << i << ". " << arg[i]; if (i + 1 != arg.size()) { m_msg << "\n"; } } }
+			else if (c == 'k') { m_msg << "\n"; for (int i = 0; i < arg.size(); ++i) { m_msg << arg[i]; if (i + 1 != arg.size()) { m_msg << "\n"; } } }
+		}
+		template<typename T, std::size_t S>
+		void processToken(char c, const std::array<T, S>& arg)
+		{
+			if (c == '0') { for (int i = 0; i < S; ++i) { m_msg << arg[i]; if (i + 1 != S) { m_msg << ", "; } } }
+			else if (c == 'n') { for (auto a : arg) { m_msg << a; } }
+			else if (c == 'c') { m_msg << "\n"; for (int i = 0; i < S; ++i) { m_msg << i << ". " << arg[i]; if (i + 1 != S) { m_msg << "\n"; } } }
+			else if (c == 'k') { m_msg << "\n"; for (int i = 0; i < S; ++i) { m_msg << arg[i]; if (i + 1 != S) { m_msg << "\n"; } } }
 		}
 		void processToken(char c, const std::string& arg);
 		void processToken(char c, const char* arg);
