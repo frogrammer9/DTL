@@ -46,6 +46,10 @@
 #define DTL_DONT_SHOW		2
 #define DTL_CONSOLE			0
 #define DTL_FILE			1
+#define DTL_MIL				1
+#define DTL_SEC				1000
+#define DTL_MIN				1000*60
+#define DTL_HOU				1000*60*60
 
 namespace dtl
 {
@@ -178,22 +182,6 @@ namespace dtl
 		Timer();
 		~Timer();
 		void Start();
-		double Get();
+		double Get(uint timeFormat = 1);
 	};
-
-	float round(float number);
-	double round(double number);
-	long double round(long double number);
-
-	void swap(short& a, short& b);
-	void swap(ushort& a, ushort& b);
-	void swap(int& a, int& b);
-	void swap(uint& a, uint& b);
-	void swap(float& a, float& b);
-	void swap(double& a, double& b);
-	void swap(long& a, long& b);
-	void swap(unsigned long& a, unsigned long& b);
-	void swap(long long& a, long long& b);
-	void swap(unsigned long long& a, unsigned long long& b);
-
 }

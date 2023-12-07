@@ -76,4 +76,5 @@ dtl::Timer::Timer() {}
 dtl::Timer::~Timer() {}
 
 void dtl::Timer::Start() { m_begin = std::chrono::high_resolution_clock::now(); }
-double dtl::Timer::Get() { return std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now() - m_begin).count(); }
+double dtl::Timer::Get(uint timeFormat/*= 1*/) { return std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now() - m_begin).count() / timeFormat; }
+
